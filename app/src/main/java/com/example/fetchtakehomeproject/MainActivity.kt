@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fetchtakehomeproject.models.FetchItem
 import com.example.fetchtakehomeproject.ui.theme.FetchTakeHomeProjectTheme
@@ -52,8 +53,20 @@ fun MainComposable(
 
 @Composable
 fun Item(item: FetchItem) {
-    Text("id: " + item.id.toString())
-    Text("listId: " + item.listId.toString())
-    Text("name: " + item.name.toString())
-    HorizontalDivider(thickness = 3.dp)
+    Text(
+        text = "id: " + item.id.toString(),
+        fontSize = 20.sp
+    )
+    Text(
+        "listId: " + item.listId.toString(),
+        fontSize = 20.sp
+    )
+    Text(
+        "name: " + item.name.toString(),
+        fontSize = 20.sp
+    )
+    HorizontalDivider(
+        thickness = 3.dp,
+        modifier = Modifier.padding(vertical = 10.dp)
+    )
 }
