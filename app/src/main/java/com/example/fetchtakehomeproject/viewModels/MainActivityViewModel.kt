@@ -35,9 +35,13 @@ class MainActivityViewModel : ViewModel() {
     }
 
     private fun sortItems(items: List<FetchItem>): List<FetchItem> {
+        val regex = Regex("""\d+$""")
         return items.sortedWith (
             compareBy<FetchItem> { it.listId }
-                .thenBy { it.name }
+                .thenBy {
+                    val result = regex.find(it.name.toString())
+                    result?.value?.toIntOrNull() ?: 0
+                }
         ).filterNot {
             it.name.isNullOrEmpty()
         }
