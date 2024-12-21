@@ -1,38 +1,49 @@
 package com.example.fetchtakehomeproject.viewModels
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fetchtakehomeproject.models.FetchItem
 import com.example.fetchtakehomeproject.retrofit.RetrofitInstance
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivityViewModel: ViewModel() {
+class MainActivityViewModel : ViewModel() {
 
-    val errorMessage = MutableLiveData<String>()
 
-    val itemList = MutableLiveData<List<FetchItem>>()
-    var job: Job? = null
+    private val _itemList = MutableStateFlow<List<FetchItem>>(emptyList())
+    val itemList: StateFlow<List<FetchItem>> = _itemList
+    private var job: Job? = null
 
     fun getFetchItems() {
-        job = CoroutineScope(Dispatchers.IO).launch {
+        job = viewModelScope.launch(Dispatchers.IO) {
             val response = RetrofitInstance.api.getFetchItems()
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
-                    itemList.postValue(response.body())
+                    val items = sortItems(response.body()!!)
+                    _itemList.emit(items)
+                    Log.d("VIEWMODEL", "SUCCESS")
                 } else {
-                    onError("Error : ${response.message()}")
+                    Log.d("VIEWMODEL", "FAILED")
                 }
             }
         }
     }
 
-    private fun onError(message: String) {
-        errorMessage.value = message
+    private fun sortItems(items: List<FetchItem>): List<FetchItem> {
+        return items.sortedWith (
+            compareBy<FetchItem> { it.listId }
+                .thenBy { it.name }
+        ).filterNot {
+            it.name.isNullOrEmpty()
+        }
     }
+
+
 
     override fun onCleared() {
         super.onCleared()

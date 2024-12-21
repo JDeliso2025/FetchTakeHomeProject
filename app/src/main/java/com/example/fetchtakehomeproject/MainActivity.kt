@@ -4,44 +4,56 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fetchtakehomeproject.models.FetchItem
 import com.example.fetchtakehomeproject.ui.theme.FetchTakeHomeProjectTheme
+import com.example.fetchtakehomeproject.viewModels.MainActivityViewModel
+
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             FetchTakeHomeProjectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainComposable()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainComposable(
+    viewModel: MainActivityViewModel = viewModel()
+) {
+    viewModel.getFetchItems()
+
+    val itemList by viewModel.itemList.collectAsState()
+
+    LazyColumn (
+        modifier = Modifier.padding(horizontal = 5.dp, vertical = 50.dp)
+    ) {
+        items(itemList) { item ->
+            Item(item)
+        }
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    FetchTakeHomeProjectTheme {
-        Greeting("Android")
-    }
+fun Item(item: FetchItem) {
+    Text("id: " + item.id.toString())
+    Text("listId: " + item.listId.toString())
+    Text("name: " + item.name.toString())
+    HorizontalDivider(thickness = 3.dp)
 }

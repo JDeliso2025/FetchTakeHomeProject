@@ -5,6 +5,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface FetchApi {
-    @GET("/hiring")
+    @GET("/hiring.json")
     suspend fun getFetchItems(): Response<List<FetchItem>>
 }
